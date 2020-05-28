@@ -1,9 +1,10 @@
 const HttpError = require("../models/http-error");
 
 const { validationResult } = require("express-validator");
-
+const mongoose = require("mongoose");
 //importing contact model
 const Contact = require("../models/contact");
+const User = require("../models/user");
 
 //Added Dummy contact list for testing purposes
 // let DUMMY_CONTACTS = [
@@ -22,6 +23,7 @@ const Contact = require("../models/contact");
 const viewContactsByUser = async (req, res, next) => {
   const userId = req.params.uid;
   let contacts;
+  console.log(userId);
   try {
     contacts = await Contact.find({ creator: userId });
   } catch (err) {
@@ -31,6 +33,7 @@ const viewContactsByUser = async (req, res, next) => {
     );
     return next(error);
   }
+  console.log(contacts);
   if (!contacts || contacts.length === 0) {
     return next(
       new HttpError("Could not find contacts for the provided user Id", 404)
@@ -44,6 +47,7 @@ const viewContactsByUser = async (req, res, next) => {
 };
 
 //post
+//for adding the contacts to the database
 const addContact = async (req, res, next) => {
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
@@ -58,13 +62,33 @@ const addContact = async (req, res, next) => {
     email,
     creator,
   });
+  let user;
+  try {
+    user = await User.findById(creator);
+  } catch (err) {
+    const error = new HttpError(
+      "Creating Contact failed, please try again",
+      500
+    );
+    return next(error);
+  }
+
+  if (!user) {
+    const error = new HttpError("Could not find user for provided id", 404);
+    return next(error);
+  }
 
   //saving to mongodB
   try {
-    await createdContact.save();
+    const sess = await mongoose.startSession();
+    sess.startTransaction();
+    await createdContact.save({ session: sess });
+    user.contacts.push(createdContact);
+    await user.save({ session: sess });
+    await sess.commitTransaction();
   } catch (err) {
     const error = new HttpError(
-      "Error in creating a Contact, Please try again",
+      "Creating place failed, please try again.",
       500
     );
     return next(error);
@@ -136,7 +160,7 @@ const deleteContact = async (req, res, next) => {
   console.log(contactId);
   let contact;
   try {
-    contact = await Contact.findById(contactId);
+    contact = await Contact.findById(contactId).populate("creator");
   } catch (err) {
     const error = new HttpError(
       "Something went wrong, could not delete Contact.",
@@ -144,12 +168,24 @@ const deleteContact = async (req, res, next) => {
     );
     return next(error);
   }
+  if (!contact) {
+    const error = new HttpError("Could not find Contact for this id.", 404);
+    return next(error);
+  }
 
   try {
-    await contact.remove();
+    console.log("1", contact);
+    const sess = await mongoose.startSession();
+    sess.startTransaction();
+    await contact.remove({ session: sess });
+    console.log("2", contact);
+    contact.creator.contacts.pull(contact);
+    console.log("3", contact);
+    await contact.creator.save({ session: sess });
+    await sess.commitTransaction();
   } catch (err) {
     const error = new HttpError(
-      "Something went wrong, could not delete Contact.",
+      "Something went wrong, could not delete contact.",
       500
     );
     return next(error);
