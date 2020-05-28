@@ -7,6 +7,8 @@ const userRoutes = require("./routes/users-routes");
 
 const port = 5000;
 const app = express();
+//Middlewares
+
 app.use(bodyParser.json());
 
 //Adding the routes
