@@ -15,6 +15,14 @@ app.use(bodyParser.json());
 app.use("/api/contacts", contactRoutes);
 app.use("/api/users", userRoutes);
 
+//handling errors
+app.use((error, req, res, next) => {
+  if (res.headerSent) {
+    return next(error);
+  }
+  res.status(error.code || 500);
+  res.json({ message: error.message || "An unknown error occurred!" });
+});
 //Listening to the port Number
 app.listen(port, (error) => {
   if (error) {

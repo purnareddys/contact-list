@@ -1,4 +1,6 @@
 //Added Dummy contact list for testing purposes
+const HttpError = require("../models/http-error");
+
 let DUMMY_CONTACTS = [
   {
     name: "tester",
@@ -57,6 +59,9 @@ const updateContact = (req, res, next) => {
 const deleteContact = (req, res, next) => {
   const contactId = req.params.cid;
 
+  if (!DUMMY_CONTACTS.find((c) => c.id === contactId)) {
+    throw new HttpError("Could not find the Specific Contact");
+  }
   DUMMY_CONTACTS = DUMMY_CONTACTS.filter((c) => c.id !== contactId);
   res.status(200).json({ message: "Successfully deleted" });
 };
