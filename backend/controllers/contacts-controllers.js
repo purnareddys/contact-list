@@ -3,6 +3,7 @@ const HttpError = require("../models/http-error");
 const { validationResult } = require("express-validator");
 
 //Added Dummy contact list for testing purposes
+const Contact = require("../models/contact");
 
 let DUMMY_CONTACTS = [
   {
@@ -11,6 +12,7 @@ let DUMMY_CONTACTS = [
     Phone: "9999999999",
     email: "testing@test.com",
     id: "c1",
+    creator: "u1",
   },
 ];
 
@@ -20,21 +22,31 @@ const viewContacts = (req, res, next) => {
 };
 
 //post
-const addContact = (req, res, next) => {
+const addContact = async (req, res, next) => {
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
     next(new HttpError("Invalid inputs passed, please check your data.", 422));
   }
-  const { name, DOB, Phone, email } = req.body;
+  const { name, DOB, Phone, email, creator } = req.body;
 
-  const createdContact = {
+  const createdContact = new Contact({
     name,
     DOB,
     Phone,
     email,
-    id: Phone,
-  };
-  DUMMY_CONTACTS.push(createdContact);
+    creator,
+  });
+  // DUMMY_CONTACTS.push(createdContact);
+  //saving to mongodB
+  try {
+    await createdContact.save();
+  } catch (err) {
+    const error = new HttpError(
+      "Error in creating a Contact, Please try again",
+      500
+    );
+    return next(error);
+  }
 
   res.status(201).json({ Contact: createdContact });
 };
