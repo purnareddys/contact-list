@@ -6,7 +6,7 @@ const router = express.Router();
 const contactsController = require("../controllers/contacts-controllers");
 
 //Performing get,post,patch,delete methods
-router.get("/", contactsController.viewContacts);
+router.get("/user/:uid", contactsController.viewContactsByUser);
 router.post(
   "/",
   [check("name").not().isEmpty(), check("Phone").not().isEmpty()],
