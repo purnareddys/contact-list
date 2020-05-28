@@ -25,7 +25,9 @@ const viewContactsByUser = async (req, res, next) => {
   let contacts;
   console.log(userId);
   try {
-    contacts = await Contact.find({ creator: userId });
+    contacts = await Contact.find({ creator: userId }).sort({
+      Phone: 1,
+    });
   } catch (err) {
     const error = new HttpError(
       "Fetching Contacts failed , Please try again",
