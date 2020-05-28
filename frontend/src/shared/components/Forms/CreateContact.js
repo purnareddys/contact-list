@@ -3,21 +3,24 @@ import { Form, Button, Col, Row, Accordion, Card } from "react-bootstrap";
 import "./CreateContact.css";
 const CreateContact = () => {
   const [dataRecieved, setDataRecieved] = useState(false);
-  const [data, setData] = useState({});
+  const [data, setData] = useState([]);
   useEffect(async () => {
-    const data = await fetch("http://localhost:5000/api/users", {
-      method: "GET",
-      headers: {
-        "Content-Type": "application/json",
-      },
-    });
+    const data = await fetch(
+      "http://localhost:5000/api/contacts/user/5ecfbe181b011937684d72f3",
+      {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      }
+    );
 
     const responseData = await data.json();
     if (responseData) {
       setDataRecieved(true);
-      setData(responseData);
+      setData(responseData.contacts);
     }
-    console.log(responseData);
+    console.log(responseData.contacts);
   }, []);
   let DUMMY_CONTACTS = [
     {
@@ -130,11 +133,44 @@ const CreateContact = () => {
                 </>
               );
             })}
-          {/* {dataRecieved &&
+          {dataRecieved &&
             data.map((ele, index) => {
-              console.log(ele);
-            })} */}
-          {console.log(data)}
+              return (
+                <>
+                  <Card>
+                    <Card.Header>
+                      <Accordion.Toggle
+                        as={Button}
+                        variant="link"
+                        eventKey={index}
+                      >
+                        {ele.name}
+                      </Accordion.Toggle>
+                    </Card.Header>
+                    <Accordion.Collapse eventKey={index}>
+                      <Card.Body>
+                        <Card style={{ width: "18rem" }}>
+                          <Card.Body>
+                            <Card.Title>{ele.name}</Card.Title>
+                            <Card.Subtitle className="mb-2 text-muted">
+                              Date-of-birth :{ele.DOB}
+                            </Card.Subtitle>
+                            <Card.Text>
+                              phoneNumber:{ele.Phone}
+                              <br />
+                              Email:{ele.email}
+                              <br />
+                            </Card.Text>
+                            <Card.Link href="#">Card Link</Card.Link>
+                            <Card.Link href="#">Another Link</Card.Link>
+                          </Card.Body>
+                        </Card>
+                      </Card.Body>
+                    </Accordion.Collapse>
+                  </Card>
+                </>
+              );
+            })}
         </Accordion>
       </div>
     </div>
