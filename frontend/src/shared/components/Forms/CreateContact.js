@@ -20,7 +20,8 @@ const CreateContact = () => {
   const [formDataDate, setFormDataDate] = useState("");
   const [formDataPhone, setFormDataPhone] = useState("");
   const [formDataEmail, setFormDataEmail] = useState("");
-  const [counter, UpdateCounter] = useState(1);
+  const [editContactBtn, setEditContactBtn] = useState(false);
+
   //Handling the input form data
   const HandleDataName = (data) => {
     setFormDataName(data);
@@ -53,6 +54,7 @@ const CreateContact = () => {
 
       const responseData = await data.json();
       if (responseData) {
+        console.log(responseData);
         setData(responseData.contacts);
       }
     };
@@ -62,7 +64,6 @@ const CreateContact = () => {
   //For Sending the data on Form submit
   const submitHandler = async (event) => {
     setDataRecieved(false);
-    UpdateCounter(counter + 1);
     event.preventDefault();
     try {
       const responseData = await fetch("http://localhost:5000/api/contacts", {
@@ -84,6 +85,47 @@ const CreateContact = () => {
       console.log(err);
     }
   };
+  //delete request handler
+  const delteHandler = async (id) => {
+    try {
+      const responseData = await fetch(
+        `http://localhost:5000/api/contacts/${id}`,
+        {
+          method: "DELETE",
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      );
+      console.log(responseData);
+    } catch (err) {
+      console.log(err);
+    }
+  };
+
+  //Updating the contact
+  const updateHandler = async (id) => {
+    try {
+      const responseData = await fetch(
+        `http://localhost:5000/api/contacts/${id}`,
+        {
+          method: "PATCH",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            email: formDataEmail.toString(),
+            Phone: formDataPhone.toString(),
+          }),
+        }
+      );
+      console.log(responseData);
+      setDataRecieved(true);
+    } catch (err) {
+      console.log(err);
+    }
+  };
+
   //after submit
   // const getHandler = async () => {
   //   UpdateCounter(...counter+1);
@@ -209,7 +251,7 @@ const CreateContact = () => {
               DUMMY_CONTACTS.map((ele, index) => {
                 return (
                   <>
-                    <Card>
+                    <Card key={ele._id}>
                       <Card.Header>
                         <Accordion.Toggle
                           as={Button}
@@ -233,7 +275,7 @@ const CreateContact = () => {
                                 Email:{ele.email}
                                 <br />
                               </Card.Text>
-                              <Card.Link href="#">Card Link</Card.Link>
+                              <Button variant="danger">Delete Contact</Button>
                               <Card.Link href="#">Another Link</Card.Link>
                             </Card.Body>
                           </Card>
@@ -247,8 +289,8 @@ const CreateContact = () => {
               data.map((ele, index) => {
                 return (
                   <>
-                    <Card>
-                      <Card.Header>
+                    <Card key={ele._id}>
+                      <Card.Header as="h5">
                         <Accordion.Toggle
                           as={Button}
                           variant="link"
@@ -257,22 +299,68 @@ const CreateContact = () => {
                           {ele.name}
                         </Accordion.Toggle>
                       </Card.Header>
+
                       <Accordion.Collapse eventKey={index}>
                         <Card.Body>
-                          <Card style={{ width: "18rem" }}>
+                          <Card>
                             <Card.Body>
-                              <Card.Title>{ele.name}</Card.Title>
+                              <Row>
+                                <Col>
+                                  <Card.Title as="h3"> {ele.name}</Card.Title>
+                                </Col>
+                                <Col>
+                                  <Button
+                                    onClick={() => {
+                                      setEditContactBtn(true);
+                                    }}
+                                    variant="outline-dark"
+                                  >
+                                    Edit Contact
+                                    {console.log(formDataPhone)}
+                                  </Button>
+                                </Col>
+                              </Row>
+
                               <Card.Subtitle className="mb-2 text-muted">
                                 Date-of-birth :{ele.DOB}
                               </Card.Subtitle>
-                              <Card.Text>
-                                phoneNumber:{ele.Phone}
-                                <br />
-                                Email:{ele.email}
-                                <br />
-                              </Card.Text>
-                              <Card.Link href="#">Card Link</Card.Link>
-                              <Card.Link href="#">Another Link</Card.Link>
+
+                              <Form.Label />
+                              <h5>Phone:{ele.Phone}</h5>
+                              <Form.Control
+                                disabled={!editContactBtn}
+                                placeholder="Edit Phone Number"
+                                onChange={(e) => {
+                                  HandleDataPhone(e.target.value);
+                                }}
+                              />
+
+                              <h5>Email:{ele.email}</h5>
+                              <Form.Control
+                                disabled={!editContactBtn}
+                                placeholder="Edit Email address"
+                                onChange={(e) => {
+                                  HandleDataEmail(e.target.value);
+                                }}
+                              />
+
+                              <Button
+                                variant="danger"
+                                onClick={() => {
+                                  delteHandler(ele._id);
+                                }}
+                              >
+                                Delete Contact
+                              </Button>
+                              <Button
+                                variant="success"
+                                disabled={!editContactBtn}
+                                onClick={() => {
+                                  updateHandler(ele._id);
+                                }}
+                              >
+                                Update Contact
+                              </Button>
                             </Card.Body>
                           </Card>
                         </Card.Body>
