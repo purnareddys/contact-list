@@ -3,7 +3,7 @@ const { check } = require("express-validator");
 const router = express.Router();
 
 //Contacts Controller section
-const contactsController = require("../controllers/contacts-controller");
+const contactsController = require("../controllers/contacts-controllers");
 
 //Performing get,post,patch,delete methods
 router.get("/", contactsController.viewContacts);
