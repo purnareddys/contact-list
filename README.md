@@ -9,7 +9,7 @@ Steps to run in Local mode :-
 - 1)Fork the repo and clone it.
 - 2)Make sure you have yarn Node.js & MongoDB(Have an account in Mongo Atlas)
 
-- 3. Should run npm install twice!
+- 3)Should run npm install twice!
   - a)Run npm install from backend folder ( cd backend)
   - b)Run npm install from frontend folder (cd frontend)
 - 4)Open two terminal windows (one for running Server and other for the UI).
