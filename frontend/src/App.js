@@ -8,6 +8,7 @@ import {
 import "bootstrap/dist/css/bootstrap.min.css";
 
 import User from "./user/pages/User";
+import Pagination from "./shared/components/pagination/Pagination";
 import NewContact from "./contacts/pages/New-Contact";
 import CreateContact from "./shared/components/Forms/CreateContact";
 const App = () => {

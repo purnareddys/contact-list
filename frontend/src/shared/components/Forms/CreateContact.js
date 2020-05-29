@@ -11,6 +11,7 @@ import {
   FormControl,
 } from "react-bootstrap";
 import NavBar from "../NavBar/NavBar";
+import AlertNotification from "../Alert";
 import "./CreateContact.css";
 const CreateContact = () => {
   //TODO refactor the below code
@@ -21,14 +22,13 @@ const CreateContact = () => {
   const [formDataPhone, setFormDataPhone] = useState("");
   const [formDataEmail, setFormDataEmail] = useState("");
   const [editContactBtn, setEditContactBtn] = useState(false);
-
+  const [updateDom, toUpdateDome] = useState(true);
   //Handling the input form data
   const HandleDataName = (data) => {
     setFormDataName(data);
   };
   const HandleDataDate = (data) => {
     setFormDataDate(data);
-    console.log(data);
   };
   const HandleDataPhone = (data) => {
     setFormDataPhone(data);
@@ -40,7 +40,6 @@ const CreateContact = () => {
 
   useEffect(() => {
     setDataRecieved(true);
-
     const fetchData = async () => {
       const data = await fetch(
         "http://localhost:5000/api/contacts/user/5ecfbe181b011937684d72f3",
@@ -54,16 +53,17 @@ const CreateContact = () => {
 
       const responseData = await data.json();
       if (responseData) {
-        console.log(responseData);
+        // setDataRecieved(true);
         setData(responseData.contacts);
+        console.log(responseData.contacts);
       }
     };
     fetchData();
-  }, [dataRecieved]);
+  }, []);
 
   //For Sending the data on Form submit
   const submitHandler = async (event) => {
-    setDataRecieved(false);
+    toUpdateDome(true);
     event.preventDefault();
     try {
       const responseData = await fetch("http://localhost:5000/api/contacts", {
@@ -79,14 +79,17 @@ const CreateContact = () => {
           creator: "5ecfbe181b011937684d72f3",
         }),
       });
-      console.log(responseData);
-      setDataRecieved(true);
+      if (responseData) {
+        toUpdateDome(true);
+        console.log(updateDom);
+      }
     } catch (err) {
       console.log(err);
     }
   };
   //delete request handler
   const delteHandler = async (id) => {
+    toUpdateDome(true);
     try {
       const responseData = await fetch(
         `http://localhost:5000/api/contacts/${id}`,
@@ -97,7 +100,10 @@ const CreateContact = () => {
           },
         }
       );
-      console.log(responseData);
+      if (responseData) {
+        toUpdateDome(true);
+        console.log(updateDom);
+      }
     } catch (err) {
       console.log(err);
     }
@@ -105,6 +111,7 @@ const CreateContact = () => {
 
   //Updating the contact
   const updateHandler = async (id) => {
+    toUpdateDome(true);
     try {
       const responseData = await fetch(
         `http://localhost:5000/api/contacts/${id}`,
@@ -119,8 +126,9 @@ const CreateContact = () => {
           }),
         }
       );
-      console.log(responseData);
-      setDataRecieved(true);
+      if (responseData) {
+        toUpdateDome(true);
+      }
     } catch (err) {
       console.log(err);
     }
@@ -148,6 +156,24 @@ const CreateContact = () => {
   //   console.log(responseData.contacts);
   // };
 
+  //for sorting the arrays
+  function dynamicSort(property) {
+    var sortOrder = 1;
+
+    if (property[0] === "-") {
+      sortOrder = -1;
+      property = property.substr(1);
+    }
+
+    return function (a, b) {
+      if (sortOrder == -1) {
+        return b[property].localeCompare(a[property]);
+      } else {
+        return a[property].localeCompare(b[property]);
+      }
+    };
+  }
+
   let DUMMY_CONTACTS = [
     {
       name: "tester",
@@ -173,6 +199,7 @@ const CreateContact = () => {
   return (
     <>
       <NavBar name="Contact List" />
+      <AlertNotification />
       <div className="grid-container">
         <div className="main-content">
           <NavBar name="Add a new Contact" />
@@ -245,10 +272,10 @@ const CreateContact = () => {
         </div>
         <div className="display-content">
           <NavBar name="Contacts " />
-
+          <FormControl type="text" placeholder="Search" className="mr-sm-2" />
           <Accordion>
             {!dataRecieved &&
-              DUMMY_CONTACTS.map((ele, index) => {
+              DUMMY_CONTACTS.sort(dynamicSort("name")).map((ele, index) => {
                 return (
                   <>
                     <Card key={ele._id}>
@@ -286,7 +313,7 @@ const CreateContact = () => {
                 );
               })}
             {dataRecieved &&
-              data.map((ele, index) => {
+              data.sort(dynamicSort("name")).map((ele, index) => {
                 return (
                   <>
                     <Card key={ele._id}>
@@ -326,7 +353,7 @@ const CreateContact = () => {
                               </Card.Subtitle>
 
                               <Form.Label />
-                              <h5>Phone:{ele.Phone}</h5>
+                              <h5>Phone: {ele.Phone}</h5>
                               <Form.Control
                                 disabled={!editContactBtn}
                                 placeholder="Edit Phone Number"
@@ -335,7 +362,7 @@ const CreateContact = () => {
                                 }}
                               />
 
-                              <h5>Email:{ele.email}</h5>
+                              <h5>Email: {ele.email}</h5>
                               <Form.Control
                                 disabled={!editContactBtn}
                                 placeholder="Edit Email address"
