@@ -12,8 +12,8 @@ import {
 } from "react-bootstrap";
 import NavBar from "../NavBar/NavBar";
 import AlertNotification from "../Alert";
-import "./CreateContact.css";
-const CreateContact = () => {
+import "./Contact.css";
+const Contacts = () => {
   //TODO refactor the below code
   const [dataRecieved, setDataRecieved] = useState(false);
   const [data, setData] = useState([]);
@@ -403,4 +403,4 @@ const CreateContact = () => {
   );
 };
 
-export default CreateContact;
+export default Contacts;

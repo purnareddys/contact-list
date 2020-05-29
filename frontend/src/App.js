@@ -7,17 +7,15 @@ import {
 } from "react-router-dom";
 import "bootstrap/dist/css/bootstrap.min.css";
 
-import User from "./user/pages/User";
-import Pagination from "./shared/components/pagination/Pagination";
 import NewContact from "./contacts/pages/New-Contact";
-import CreateContact from "./shared/components/Forms/CreateContact";
+import Contacts from "./shared/components/Forms/Contacts";
 const App = () => {
   return (
     <>
       <Router>
         <Switch>
           <Route path="/" exact>
-            <CreateContact />
+            <Contacts />
           </Route>
           <Route path="/contacts/new" exact>
             <NewContact />

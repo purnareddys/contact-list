@@ -12,7 +12,7 @@ Steps to run in Local mode :-
    a)Run npm install from backend folder ( cd backend)
    b)Run npm install from frontend folder (cd frontend)
    4)Open two terminal windows (one for running Server and other for the UI).
-   5)To connect to MongoDB, add your own url(MongoDB Atlas cluster) inside index.js file(Present in Backend folder)
+   5)To connect to MongoDB, add your own url(MongoDB Atlas cluster) to mongoose.connect() inside index.js file(Present in Backend folder)
 
 6)Run npm start (from backend folder ) to start the server. By default it will run on port 5000.
 7)For UI ,run npm start(from frontend folder) and it will open on a new tab on port 3000.
