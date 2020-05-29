@@ -136,23 +136,6 @@ const updateContact = async (req, res, next) => {
   }
 
   res.status(200).json({ contact: contact.toObject({ getters: true }) });
-
-  // const contactIndex = DUMMY_CONTACTS.findIndex((c) => c.id === contactId);
-
-  // console.log("first", updatedContact);
-  // updatedContact.email = email;
-  // updatedContact.Phone = Phone;
-  // console.log("second", updatedContact);
-
-  // let newEmailArray = [];
-  // let newPhoneArray = [];
-  // newEmailArray.push(updatedContact.email);
-  // newEmailArray.push(DUMMY_CONTACTS[contactIndex].email);
-  // DUMMY_CONTACTS[contactIndex].email = newEmailArray;
-  // newPhoneArray.push(updatedContact.Phone);
-  // newPhoneArray.push(DUMMY_CONTACTS[contactIndex].Phone);
-  // DUMMY_CONTACTS[contactIndex].Phone = newPhoneArray;
-  // res.status(201).json({ message: "Successfully Updated" });
 };
 
 //delete/:cid
